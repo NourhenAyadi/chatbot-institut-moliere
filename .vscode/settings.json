@@ -1,0 +1,6 @@
+{
+    "python.defaultInterpreterPath": "/home/nourhene/chatbot_moliere/venv/bin/python",
+    "python.analysis.extraPaths": [
+        "/home/nourhene/chatbot_moliere/venv/lib/python3.10/site-packages"
+    ]
+}

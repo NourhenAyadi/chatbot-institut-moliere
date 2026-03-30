@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduBot — Assistant Institut Molière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink: #0e1117;
+  --ink-soft: #3d4451;
+  --ink-mute: #7a8394;
+  --paper: #f7f5f0;
+  --paper-warm: #ede9e2;
+  --paper-card: #ffffff;
+  --accent: #0d1d41;
+  --accent-light: #e8eef7;
+  --accent-mid: #2e6fbf;
+  --gold: #b07d2e;
+  --gold-light: #f5ead4;
+  --teal: #1a6b5a;
+  --teal-light: #d8f0ea;
+  --red: #8b2020;
+  --border: rgba(14,17,23,0.1);
+  --border-mid: rgba(14,17,23,0.18);
+  --shadow: 0 2px 16px rgba(14,17,23,0.08);
+  --shadow-lg: 0 8px 40px rgba(14,17,23,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Le vrai fond flouté (Background blur) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20px; /* Évite les bords nets du flou */
+  background: url('/static/background.jpg') center/cover no-repeat, linear-gradient(135deg, #eaeef3 0%, #d8e0eb 100%);
+  filter: blur(12px); /* 👈 Le fameux flou ! */
+  z-index: -1;
+}
+
+/* ---- HEADER ---- */
+header {
+  background: #0d1d41; /* Couleur demandée pour la barre supérieure */
+  color: white;
+  padding: 0 2rem;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.header-brand { display: flex; align-items: center; gap: 12px; }
+.header-logo {
+  width: 72px; height: 72px; /* 👈 Logo TRÈS grand */
+  background: var(--accent-mid);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 15px rgba(46, 111, 191, 0.4);
+}
+.header-logo svg { width: 22px; height: 22px; }
+.brand-name { font-family: 'DM Serif Display', serif; font-size: 20px; letter-spacing: -0.01em; }
+.brand-tag { font-size: 11px; opacity: 0.6; margin-top: 1px; font-weight: 300; }
+
+.header-nav { display: flex; gap: 8px; }
+.nav-btn {
+  padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  background: transparent; color: rgba(255,255,255,0.7);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+.nav-btn.active { background: rgba(255,255,255,0.15); color: white; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+
+/* ---- LAYOUT ---- */
+.app-layout {
+  flex: 1; display: flex;
+  max-width: 1400px; margin: 0 auto; width: 100%;
+  padding: 1.5rem; gap: 1.5rem;
+  height: calc(100vh - 64px);
+}
+
+/* ---- SIDEBAR ---- */
+.sidebar {
+  width: 280px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 1.25rem;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.card {
+  background: var(--paper-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  background: var(--paper-warm);
+}
+.card-body { padding: 12px; }
+
+/* Doc Items */
+.doc-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px; border-radius: var(--radius-sm);
+  cursor: default; transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.doc-item:hover { background: var(--paper); }
+.doc-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; flex-shrink: 0;
+}
+.doc-icon.pdf { background: #fee2e2; color: #991b1b; }
+.doc-icon.txt { background: #e0f2fe; color: #075985; }
+.doc-icon.json { background: #fef3c7; color: #92400e; }
+.doc-details { flex: 1; min-width: 0; }
+.doc-name { font-size: 12.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-tag { font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+
+/* ---- MAIN ---- */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+
+/* ---- CHAT PANEL ---- */
+.chat-panel {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--paper-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.chat-topbar {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--paper-warm);
+}
+.chat-status { display: flex; align-items: center; gap: 10px; }
+.status-indicator { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; position: relative; }
+.status-indicator.thinking { background: var(--gold); }
+.status-indicator.thinking::after {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%;
+    border: 2px solid var(--gold); animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+.status-label { font-size: 14px; font-weight: 600; color: var(--ink); }
+.status-sub { font-size: 11px; color: var(--ink-mute); }
+
+.messages {
+  flex: 1; overflow-y: auto; padding: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  scroll-behavior: smooth;
+  position: relative;
+  z-index: 1;
+}
+
+/* Watermark du logo flouté/clairci en arrière-plan */
+.messages::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('/static/logo.png') center/40% no-repeat fixed;
+  filter: blur(6px); /* 👈 Watermark également flouté */
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+}
+.msg-row { display: flex; gap: 14px; max-width: 85%; }
+.msg-row.user { align-self: flex-end; flex-direction: row-reverse; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.avatar.bot { background: transparent; overflow: hidden; padding: 0; }
+.avatar.bot img { width: 100%; height: 100%; object-fit: contain; }
+.avatar.user { background: transparent; overflow: hidden; padding: 0; }
+.avatar.user img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.bubble {
+  padding: 14px 18px; border-radius: 18px;
+  font-size: 14.5px; line-height: 1.6;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  position: relative;
+}
+.bot .bubble {
+  background: white;
+  border: 1px solid var(--border);
+  border-top-left-radius: 4px;
+  color: var(--ink);
+}
+.user .bubble {
+  background: var(--accent);
+  color: white;
+  border-top-right-radius: 4px;
+}
+.msg-footer { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.type-badge {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 10px; letter-spacing: 0.05em;
+}
+.type-faq { background: var(--teal-light); color: var(--teal); }
+.type-rag { background: var(--accent-light); color: var(--accent); }
+.type-none { background: #f1f1f1; color: #666; }
+
+.typing-row { display: flex; gap: 14px; align-items: flex-start; }
+.typing-bubble {
+  padding: 14px 20px; background: white;
+  border: 1px solid var(--border); border-radius: 18px;
+  border-top-left-radius: 4px;
+  display: flex; gap: 5px; align-items: center;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-mute); animation: bounce 1.4s infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
+.suggestions {
+  padding: 0 24px 16px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.sug {
+  padding: 8px 16px;
+  border: 1px solid var(--border-mid);
+  border-radius: 24px; cursor: pointer;
+  font-size: 12.5px; color: var(--ink-soft);
+  background: white; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+}
+.sug:hover { 
+    border-color: var(--accent-mid); color: var(--accent); 
+    background: var(--accent-light); transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 79, 138, 0.1);
+}
+
+.input-row {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: flex-end;
+  background: var(--paper-warm);
+}
+.input-wrap { flex: 1; position: relative; }
+textarea#chat-input {
+  width: 100%; resize: none;
+  padding: 12px 18px; border: 1px solid var(--border-mid);
+  border-radius: 14px; font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  background: white; color: var(--ink);
+  line-height: 1.5; max-height: 120px;
+  transition: all 0.2s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+textarea#chat-input:focus { outline: none; border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(46, 111, 191, 0.15); }
+.send-btn {
+  width: 48px; height: 48px;
+  background: var(--ink); color: white;
+  border: none; border-radius: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.send-btn:hover { background: var(--accent); transform: scale(1.05); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ---- BENCH PANEL (Mock) ---- */
+.bench-panel { display: none; }
+.bench-panel.visible { display: flex; flex-direction: column; gap: 1rem; }
+.bench-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+/* Animations */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.msg-row { animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+@media (max-width: 900px) {
+    .sidebar { display: none; }
+    .chat-panel { height: 100%; }
+}
+/* --------- MOBILE RESPONSIVENESS --------- */
+@media (max-width: 768px) {
+  header { height: 60px; padding: 0 12px; }
+  .header-logo { width: 44px; height: 44px; }
+  .brand-name { font-size: 17px; margin-left: 6px !important; }
+  .app-layout { padding: 0; }
+  .chat-panel { border-radius: 0; border: none; }
+  .messages { padding: 16px 12px; }
+  .msg-row { max-width: 95%; gap: 8px; }
+  .bubble { padding: 12px 14px; font-size: 14px; border-radius: 14px; }
+  .avatar { width: 32px; height: 32px; }
+  .input-bar { padding: 0 12px 12px 12px; }
+  .chat-input { padding: 14px 48px 14px 14px; font-size: 14px; border-radius: 16px; }
+  .send-btn { width: 36px; height: 36px; right: 18px; bottom: 18px; }
+  .sug { font-size: 12px; padding: 6px 12px; }
+  .chat-topbar { padding: 12px; }
+  .status-label { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="header-logo" style="background: transparent; box-shadow: none;">
+      <img src="/static/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    </div>
+    <div>
+      <div class="brand-name" style="margin-left: 10px;">Assistant Molière</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+      <!-- Retiré: Statistiques, Réglages -->
+  </nav>
+</header>
+
+<div class="app-layout">
+  <!-- SIDEBAR RETIRÉE POUR ÉPURER L'INTERFACE -->
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- CHAT -->
+    <div id="panel-chat" style="display:flex;flex-direction:column;flex:1;gap:1rem;">
+      <div class="chat-panel">
+        <div class="chat-topbar">
+          <div class="chat-status">
+            <div class="status-indicator" id="status-dot"></div>
+            <!-- Hack: On garde l'ID status-label caché pour éviter les erreurs Javascript -->
+            <div id="status-label" style="display: none;"></div>
+          </div>
+          <div>
+          </div>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="msg-row">
+            <div class="avatar bot"><img src="/static/logo.png" alt="Molière" /></div>
+            <div class="msg-content">
+              <div class="bubble">Bonjour ! 👋 Je suis l'assistant intelligent de l'<strong>Institut Molière</strong>.<br><br>Je peux vous aider à trouver des informations sur nos formations, nos tarifs, les modalités d'inscription ou notre calendrier.<br><br>Comment puis-je vous renseigner aujourd'hui ?</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggestions" id="suggestions">
+            {% for suggest in suggestions %}
+                <button class="sug" onclick="useSug(this)">{{ suggest }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="input-row">
+          <div class="input-wrap">
+            <textarea id="chat-input" rows="1" placeholder="Posez votre question ici..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          </div>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOCK PANELS -->
+    <div id="panel-bench" class="bench-panel">
+        <div class="card">
+            <div class="card-header">Performances de Recherche</div>
+            <div class="card-body">
+                <p style="padding: 20px; color: var(--ink-mute); text-align: center;">Les statistiques de performance seront disponibles après quelques sessions d'utilisation.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="panel-config" class="bench-panel">
+        <div class="card">
+            <div class="card-header">Réglages Assistant</div>
+            <div class="card-body" style="padding: 24px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Sensibilité RAG</label>
+                        <input type="range" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Moteur de Traduction</label>
+                        <select style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-mid);">
+                            <option>Google Translate (Actif)</option>
+                            <option>DeepL API</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let isLoading = false;
+
+async function sendMessage() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if (!text || isLoading) return;
+
+  const suggestionsDiv = document.getElementById('suggestions');
+  if (suggestionsDiv) suggestionsDiv.style.display = 'none';
+
+  addMsg(text, 'user');
+  inp.value = ''; 
+  inp.style.height = 'auto';
+  
+  const typing = showTyping();
+  isLoading = true;
+  updateStatus(true);
+
+  try {
+    const response = await fetch('/ask', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text })
+    });
+
+    if (!response.ok) throw new Error('Erreur réseau');
+    
+    const data = await response.json();
+    typing.remove();
+    
+    addMsg(data.response, 'bot', data.type);
+    
+    // Si des suggestions dynamiques sont renvoyées par le backend
+    if (data.suggestions && data.suggestions.length > 0) {
+        showDynamicSuggestions(data.suggestions);
+    }
+
+  } catch(e) {
+    console.error(e);
+    typing.remove();
+    addMsg("Désolé, je rencontre une difficulté technique pour vous répondre. Veuillez réessayer plus tard.", 'bot', 'NONE');
+  }
+
+  isLoading = false;
+  updateStatus(false);
+}
+
+function addMsg(text, role, type = null) {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  
+  const av = document.createElement('div');
+  av.className = `avatar ${role}`;
+  if (role === 'bot') {
+      av.innerHTML = '<img src="/static/logo.png" alt="Molière" />';
+  } else {
+      av.innerHTML = '<img src="/static/user.png" alt="User" />';
+  }
+  
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+  
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  // Remplacer les retours à la ligne par des <br> et supporter un peu de markdown simple
+  bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+                         .replace(/\n/g,'<br>')
+                         .replace(/<i>(.*?)<\/i>/g, '<em>$1</em>');
+  
+  content.appendChild(bubble);
+  
+  /* Désactivation du badge de source "RAG" sous le message
+  if (role === 'bot' && type) {
+    const footer = document.createElement('div');
+    footer.className = 'msg-footer';
+    const badge = document.createElement('span');
+    badge.className = `type-badge type-${type.toLowerCase()}`;
+    badge.textContent = type;
+    footer.appendChild(badge);
+    content.appendChild(footer);
+  }
+  */
+  
+  row.appendChild(av); 
+  row.appendChild(content);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'typing-row';
+  row.innerHTML = '<div class="avatar bot"><img src="/static/logo.png" alt="Molière" /></div><div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function showDynamicSuggestions(suggestions) {
+    const container = document.getElementById('suggestions');
+    container.innerHTML = '';
+    suggestions.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'sug';
+        btn.textContent = s;
+        btn.onclick = () => useSug(btn);
+        container.appendChild(btn);
+    });
+    container.style.display = 'flex';
+}
+
+function useSug(el) {
+  document.getElementById('chat-input').value = el.textContent;
+  sendMessage();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { 
+    e.preventDefault(); 
+    sendMessage(); 
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function clearChat() {
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  addMsg("Historique effacé. En quoi puis-je vous aider ?", 'bot');
+  document.getElementById('suggestions').style.display = 'flex';
+}
+
+function updateStatus(thinking) {
+    const dot = document.getElementById('status-dot');
+    const label = document.getElementById('status-label');
+    const btn = document.getElementById('send-btn');
+    
+    if (thinking) {
+        dot.className = 'status-indicator thinking';
+        label.textContent = 'Réflexion...';
+        btn.disabled = true;
+    } else {
+        dot.className = 'status-indicator';
+        label.textContent = 'Assistant en ligne';
+        btn.disabled = false;
+    }
+}
+
+function showPanel(panel, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-chat').style.display = panel === 'chat' ? 'flex' : 'none';
+  document.getElementById('panel-bench').style.display = panel === 'bench' ? 'flex' : 'none';
+  document.getElementById('panel-config').style.display = panel === 'config' ? 'flex' : 'none';
+}
+
+window.onload = () => {
+    document.getElementById('chat-input').focus();
+};
+</script>
+</body>
+</html>

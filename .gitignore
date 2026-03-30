@@ -1,0 +1,22 @@
+# Fichiers d'environnement
+.env
+
+# Dossiers d'environnement virtuel
+venv/
+env/
+.venv/
+
+# Dossier de base de données vectorielle ChromaDB
+db/
+
+# Fichiers de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Fichiers système
+.DS_Store
+
+# Fichiers de log
+*.log
