@@ -14,6 +14,11 @@ It is built using FastAPI and LangChain, and supports both:
 ---
 ## Demo
 
+### Chat Interface
+![Chat UI](static/Screenshot from 2026-04-09 20-30-40.png)
+
+### Example Interaction
+![Chat Example](static/Screenshot from 2026-04-15 16-37-28.png)
 
 
 ---
