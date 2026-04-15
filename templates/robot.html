@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduBot — Mode Robot</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0e1117;
+      --paper-card: #ffffff;
+      --accent: #0d1d41;
+      --accent-mid: #2e6fbf;
+      --green: #10b981;
+      --red: #ef4444;
+      --border: rgba(14, 17, 23, 0.1);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #eaeef3 0%, #d8e0eb 100%);
+      margin: 0; padding: 2rem; color: var(--ink);
+    }
+    .header { text-align: center; margin-bottom: 2rem; }
+    h1 { font-family: 'DM Serif Display', serif; color: var(--accent); font-size: 2.5rem; margin-bottom: 0.5rem;}
+    p.subtitle { color: #555; }
+    
+    .container {
+      max-width: 800px; margin: 0 auto;
+      background: var(--paper-card); border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 2rem;
+    }
+    
+    .record-btn {
+      display: block; width: 120px; height: 120px;
+      border-radius: 50%; border: none; margin: 2rem auto;
+      background: var(--accent-mid); color: white;
+      font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(46, 111, 191, 0.3);
+    }
+    .record-btn:hover { transform: scale(1.05); }
+    .record-btn.recording {
+      background: var(--red);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    
+    .status { text-align: center; margin-top: -1rem; font-weight: 500; min-height: 24px; color: #666; }
+    
+    .feedback-section {
+      margin-top: 2rem; display: none;
+    }
+    .card {
+      background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .card h3 { margin-top: 0; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;}
+    
+    .highlight-mistake { color: var(--red); text-decoration: line-through; }
+    .highlight-correct { color: var(--green); font-weight: bold; }
+    
+    .translations {
+      display: flex; gap: 1rem;
+    }
+    .tr-box {
+      flex: 1; background: white; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);
+    }
+    
+    .audio-player { margin-top: 1rem; width: 100%; }
+    
+    /* Loader CSS */
+    .loader {
+      display: none; width: 48px; height: 48px;
+      border: 5px solid #FFF; border-bottom-color: var(--accent-mid);
+      border-radius: 50%; box-sizing: border-box;
+      animation: rotation 1s linear infinite; margin: 2rem auto;
+    }
+    @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Mode Robot : Ateliers de Lecture</h1>
+    <p class="subtitle">Lisez un texte en français pour analyser votre prononciation et votre grammaire.</p>
+  </div>
+
+  <div class="container">
+    <button id="recordBtn" class="record-btn">Cliquer pour Parler</button>
+    <div class="status" id="statusText"></div>
+    <div class="loader" id="loader"></div>
+
+    <div class="feedback-section" id="feedbackSection">
+      
+      <div class="card">
+        <h3>1. Transcription (Ce que j'ai entendu)</h3>
+        <p id="sttText">...</p>
+      </div>
+      
+      <div class="card">
+        <h3>2. Phrase Corrigée & Feedback</h3>
+        <p class="highlight-correct" id="correctionText">...</p>
+        <p style="color: #4b5563; font-size: 0.95rem; margin-top: 0.5rem;" id="feedbackText">...</p>
+        
+        <h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #555;">Écouter la prononciation parfaite :</h4>
+        <audio id="ttsAudio" controls class="audio-player"></audio>
+      </div>
+
+      <div class="translations">
+        <div class="tr-box">
+          <h4 style="margin: 0 0 0.5rem; color: #1e3a8a; display: flex; justify-content: space-between; align-items: center;">
+            🇬🇧 Anglais
+            <button onclick="playTranslation('en')" title="Écouter" style="background:none;border:none;cursor:pointer;font-size:1.2rem;">🔊</button>
+          </h4>
+          <p id="enText" style="margin:0; font-size: 0.95rem;">...</p>
+        </div>
+        <div class="tr-box">
+          <h4 style="margin: 0 0 0.5rem; color: #1e3a8a; display: flex; justify-content: space-between; align-items: center;">
+            🇸🇦 Arabe
+            <button onclick="playTranslation('ar')" title="Écouter" style="background:none;border:none;cursor:pointer;font-size:1.2rem;">🔊</button>
+          </h4>
+          <p id="arText" style="font-size: 1.1rem; text-align: right; margin:0;" dir="rtl">...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    const recordBtn = document.getElementById('recordBtn');
+    const statusText = document.getElementById('statusText');
+    const loader = document.getElementById('loader');
+    const feedbackSection = document.getElementById('feedbackSection');
+    
+    recordBtn.addEventListener('click', async () => {
+      if (!isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+        
+        mediaRecorder.onstop = sendAudio;
+        
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.classList.add('recording');
+        recordBtn.innerText = "Stop (Écoute...)";
+        statusText.innerText = "Je vous écoute, lisez votre texte...";
+        feedbackSection.style.display = 'none';
+      } catch (err) {
+        alert("Erreur de microphone : " + err.message);
+      }
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      isRecording = false;
+      recordBtn.classList.remove('recording');
+      recordBtn.innerText = "Cliquer pour Parler";
+      statusText.innerText = "Traitement audio en cours...";
+      
+      // Stop all tracks to release mic
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    }
+
+    async function sendAudio() {
+      loader.style.display = 'block';
+      recordBtn.style.display = 'none';
+      
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "recording.webm");
+
+      try {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) throw new Error("Erreur serveur API");
+        const data = await response.json();
+        
+        document.getElementById('sttText').innerText = data.transcription_originale || "Aucun son détecté.";
+        document.getElementById('correctionText').innerText = data.analyse.correction_fr;
+        document.getElementById('feedbackText').innerText = data.analyse.feedback;
+        document.getElementById('enText').innerText = data.analyse.traduction_en;
+        document.getElementById('arText').innerText = data.analyse.traduction_ar;
+        
+        // Load TTS audio
+        const spokenText = data.analyse.phrase_audio || data.analyse.correction_fr;
+        const ttsUrl = '/api/tts?text=' + encodeURIComponent(spokenText);
+        const audioElement = document.getElementById('ttsAudio');
+        audioElement.src = ttsUrl;
+        
+        // Auto-play TTS when ready
+        audioElement.oncanplaythrough = () => { audioElement.play(); };
+
+        feedbackSection.style.display = 'block';
+        statusText.innerText = "Analyse terminée.";
+      } catch (e) {
+        statusText.innerText = "Erreur: " + e.message;
+      } finally {
+        loader.style.display = 'none';
+        recordBtn.style.display = 'block';
+      }
+    }
+
+    function playTranslation(lang) {
+      const textId = lang === 'en' ? 'enText' : 'arText';
+      const text = document.getElementById(textId).innerText;
+      if (!text || text === '...') return;
+      
+      const audio = new Audio('/api/tts?text=' + encodeURIComponent(text) + '&lang=' + lang);
+      audio.play();
+    }
+  </script>
+</body>
+</html>

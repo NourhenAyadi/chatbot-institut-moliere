@@ -1,0 +1,50 @@
+# Guide de Grammaire Française pour les Enfants
+
+Ce guide explique les règles grammaticales de base du français de façon simple, pour les enfants et les parents qui les accompagnent.
+
+## 1. Le Genre : Masculin et Féminin
+En français, tous les noms ont un genre. Il n'y a pas toujours de règle logique, il faut apprendre avec les articles.
+- **Masculin** → on dit "le" ou "un" : le chat, un garçon, le soleil.
+- **Féminin** → on dit "la" ou "une" : la maison, une fille, la lune.
+- **Devant une voyelle** : on dit "l'" : l'école, l'arbre.
+- **Astuce** : Apprendre le mot avec son article dès le début (ex: "le livre", pas juste "livre").
+
+## 2. Le Pluriel
+Pour mettre un mot au pluriel, on ajoute généralement un "s" à la fin.
+- un chat → des chats
+- une maison → des maisons
+- Exceptions courantes : un cheval → des chevaux / un œil → des yeux
+
+## 3. Les Articles
+- **Définis** (on sait de quoi on parle) : le, la, les. Ex: "Le chien de Paul est mignon."
+- **Indéfinis** (on parle de quelque chose en général) : un, une, des. Ex: "Je veux un bonbon."
+- **Partitifs** (une quantité) : du, de la, de l'. Ex: "Je bois du lait."
+
+## 4. La Conjugaison des Verbes Essentiels
+Les verbes les plus importants à apprendre en premier :
+
+### Être (to be)
+- Je suis, tu es, il/elle est, nous sommes, vous êtes, ils/elles sont.
+- Exemple : "Je suis content. Elle est à l'école."
+
+### Avoir (to have)
+- J'ai, tu as, il/elle a, nous avons, vous avez, ils/elles ont.
+- Exemple : "J'ai un stylo. Il a faim."
+
+### Aller (to go)
+- Je vais, tu vas, il/elle va, nous allons, vous allez, ils/elles vont.
+- Exemple : "Je vais à l'école. Nous allons au parc."
+
+### Verbes en -ER (les plus courants)
+Pour "parler", "jouer", "manger" : retirer le -ER et ajouter : -e, -es, -e, -ons, -ez, -ent.
+- Ex : "Je parle français. Tu joues au foot. Nous mangeons une pomme."
+
+## 5. La Négation
+Pour mettre une phrase à la forme négative, on encadre le verbe avec "ne...pas".
+- "J'aime le lait." → "Je **n'**aime **pas** le lait."
+- "Il est là." → "Il **n'**est **pas** là."
+
+## 6. Les Questions Simples
+- Par intonation : "Tu parles français ?" (la voix monte à la fin)
+- Avec "Est-ce que" : "Est-ce que tu parles français ?"
+- Mots interrogatifs : **Qui** (who), **Quoi/Que** (what), **Où** (where), **Quand** (when), **Comment** (how), **Pourquoi** (why), **Combien** (how many).
