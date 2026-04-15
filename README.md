@@ -15,10 +15,10 @@ It is built using FastAPI and LangChain, and supports both:
 ## Demo
 
 ### Chat Interface
-![Chat UI](static/Screenshot from 2026-04-09 20-30-40.png)
+![Chat UI](static/ui.png)
 
 ### Example Interaction
-![Chat Example](static/Screenshot from 2026-04-15 16-37-28.png)
+![Chat Example](static/test.png)
 
 
 ---
@@ -101,14 +101,7 @@ cp .env.example .env
 
 ```bash
 uvicorn main:app --reload --port 8001
-```
 
-Access the application:
-
-* Chat interface: http://localhost:8001/
-* API documentation (Swagger): http://localhost:8001/docs
-
----
 
 ### Run with Docker
 
@@ -168,6 +161,5 @@ Response:
 ---
 
 ## Author
+Nourhene AYADI
 
-Your Name
-ma (créée automatiquement au premier lancement, ignorée dans git).
